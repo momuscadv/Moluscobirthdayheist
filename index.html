@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#151020">
+<title>Molusco: The Birthday Heist</title>
+<style>
+:root{
+  --bg:#100d19; --panel:#1c1729; --panel2:#282039; --purple:#a879ff;
+  --pink:#ff4e9b; --orange:#ffad52; --green:#7dffad; --white:#fff8ff;
+  --muted:#c6b9d5; --line:#4c3a62;
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--white);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:
+radial-gradient(ellipse at 15% 10%,#39205b 0,transparent 34%),
+radial-gradient(ellipse at 95% 30%,#4a1b38 0,transparent 30%),var(--bg)}
+button{font:inherit;cursor:pointer}
+.app{max-width:560px;min-height:100svh;margin:auto;padding:18px 15px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tag{border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#171122}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#1a1425;border:1px solid var(--line);border-radius:13px;padding:10px 11px}
+.stat span{display:block;color:var(--muted);font-size:.65rem;letter-spacing:.09em;text-transform:uppercase}
+.stat strong{display:block;margin-top:4px;font-size:1.1rem}
+.screen{display:none;flex:1;animation:appear .22s ease-out}
+.screen.active{display:flex;flex-direction:column;gap:14px}
+@keyframes appear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.hero{position:relative;overflow:hidden;min-height:270px;border:1px solid #6a4385;border-radius:22px;padding:23px 19px;display:flex;flex-direction:column;justify-content:flex-end;background:
+linear-gradient(180deg,rgba(17,11,30,.12),rgba(17,11,30,.94)),
+linear-gradient(130deg,#542d80,#21172f 48%,#9b345f)}
+.city{position:absolute;inset:0;opacity:.55;pointer-events:none}
+.hero h1{position:relative;margin:0;font-size:clamp(2.2rem,12vw,4.2rem);line-height:.9;letter-spacing:-.07em;text-transform:uppercase;text-shadow:0 4px 0 #4c225f}
+.hero h1 em{font-style:normal;color:var(--orange);display:block;font-size:.52em;letter-spacing:.02em;margin-top:13px}
+.hero p{position:relative;color:#f3dfff;line-height:1.5;margin:15px 0 0;max-width:32ch}
+.eyebrow{color:var(--orange);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:800}
+.panel{background:linear-gradient(145deg,rgba(40,32,57,.96),rgba(24,19,35,.98));border:1px solid var(--line);border-radius:18px;padding:17px}
+h2{font-size:1.5rem;line-height:1.1;margin:0 0 9px;letter-spacing:-.03em}
+p{line-height:1.55;color:#e8def0;margin:8px 0}
+.small{font-size:.83rem;color:var(--muted)}
+.btns{display:flex;flex-direction:column;gap:9px;margin-top:auto}
+.btn{width:100%;min-height:49px;border:1px solid #7d59a4;border-radius:13px;padding:13px 15px;background:linear-gradient(100deg,#6f3ca1,#8c3e85);color:white;font-weight:800;text-align:left;box-shadow:0 4px 0 #321b47;transition:transform .12s}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #321b47}
+.btn.primary{background:linear-gradient(100deg,#ff9c43,#ff4f90);border-color:#ffb5a9;color:#24132a;box-shadow:0 4px 0 #79345b}
+.btn.secondary{background:#21192f;border-color:#59436f;box-shadow:none;color:#f5eaff}
+.btn .sub{display:block;font-size:.76rem;font-weight:500;opacity:.88;margin-top:3px}
+.notice{border-left:3px solid var(--orange);padding:8px 12px;color:#e9d9f5;background:#21192f;border-radius:0 10px 10px 0;font-size:.88rem}
+.bigicon{font-size:3.2rem;line-height:1}
+.progress{height:7px;border-radius:999px;background:#342640;overflow:hidden}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--orange));transition:width .3s}
+.badge{display:inline-block;padding:6px 9px;border-radius:8px;background:#1d422d;color:var(--green);font-size:.72rem;font-weight:900;letter-spacing:.06em}
+.letter{white-space:pre-line;border:1px dashed #9b6bb8;background:#21172e;border-radius:14px;padding:16px;line-height:1.65}
+.footer{font-size:.68rem;text-align:center;color:#9889aa;padding-top:3px}
+a{color:var(--orange)}
+@media(min-width:440px){.app{padding-top:24px}.hero{min-height:310px}}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="topbar"><span>◆ Molusco Interactive</span><span class="tag">Edición cumpleaños</span></div>
+  <div class="stats" aria-label="Estadísticas de juego">
+    <div class="stat"><span>MoluCoins</span><strong id="money">$000</strong></div>
+    <div class="stat"><span>Misiones</span><strong id="missionCount">0/3</strong></div>
+    <div class="stat"><span>Nivel</span><strong id="level">01</strong></div>
+  </div>
+  <div class="progress" aria-label="Progreso"><div id="progressBar"></div></div>
+
+  <section class="screen active" id="start">
+    <div class="hero">
+      <svg class="city" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <g fill="#100b1c">
+          <path d="M0 170h36v-50h28v28h25V95h32v75h22v-35h28v-62h36v97h25v-48h31v48h24V83h39v87h21v-39h35v39h31v-69h37v69h28v130H0z"/>
+          <path d="M0 235h500v65H0z" fill="#0b0911"/>
+        </g>
+        <g stroke="#ffad52" stroke-width="2" opacity=".6">
+          <path d="M49 140h7m-7 12h7m-7 12h7M127 112h8m-8 12h8m-8 12h8M220 115h8m-8 12h8m-8 12h8M316 101h8m-8 12h8m-8 12h8M411 122h8m-8 12h8"/>
+        </g>
+        <path d="M0 263L500 224" stroke="#a879ff" stroke-width="3" opacity=".8"/>
+        <path d="M0 280L500 241" stroke="#ff4e9b" stroke-width="2" opacity=".6"/>
+      </svg>
+      <div class="eyebrow">Un trabajo · Tres misiones · Un botín</div>
+      <h1>Molusco<em>The Birthday Heist</em></h1>
+      <p>La ciudad tiene un último encargo para ti, Pelone. Y esta vez… el botín es personal.</p>
+    </div>
+    <div class="panel">
+      <h2>¿Estás listo, jefe?</h2>
+      <p>Tu contacto te ha enviado un mensaje urgente. Completa las misiones, junta MoluCoins y descubre tu recompensa.</p>
+      <div class="notice">Advertencia: el juego contiene bromas, cariño y una cantidad sospechosa de ego.</div>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="go('contact')">▶ INICIAR PARTIDA</button></div>
+  </section>
+
+  <section class="screen" id="contact">
+    <div class="panel"><div class="eyebrow">Mensaje encriptado · 00:01</div><div class="bigicon">📟</div>
+      <h2>El contacto</h2>
+      <p>Qué onda, Molusco.</p>
+      <p>Alguien ha escondido un botín que te pertenece. Tenemos tres misiones para recuperarlo. Tu novia sabe demasiado, así que no hagas preguntas.</p>
+      <p>Preséntate en el punto de encuentro. Y por favor, esta vez no llegues diciendo “ahorita”.</p>
+      <div class="notice">Objetivo: demostrar que todavía tienes lo necesario para ser una leyenda.</div>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="go('profile')">ACEPTAR EL TRABAJO →</button></div>
+  </section>
+
+  <section class="screen" id="profile">
+    <div class="hero" style="min-height:210px">
+      <div class="eyebrow">Expediente confidencial</div>
+      <h1 style="font-size:3.3rem">SNAIDER<em>Alias: Molusco / Pelone</em></h1>
+      <p>Se busca por exceso de estilo y por cumplir años sin autorización.</p>
+    </div>
+    <div class="panel"><h2>Ficha del protagonista</h2>
+      <p>◆ Nivel de peligro: 10/10</p><p>◆ Nivel de madurez: en investigación</p><p>◆ Habilidad especial: hacerse el inocente</p><p>◆ Debilidad conocida: su novia cuando trae una sorpresa.</p>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="go('vehicle')">VER PRIMER OBJETIVO →</button></div>
+  </section>
+
+  <section class="screen" id="vehicle">
+    <div class="panel"><div class="eyebrow">Misión 1 · Rueda o muere</div><div class="bigicon">🚦</div>
+      <h2>Elige tu vehículo de escape</h2>
+      <p>El contacto te ofrece tres opciones. Todas son legales dentro de este juego. Más o menos.</p>
+    </div>
+    <div class="btns">
+      <button class="btn" onclick="chooseVehicle('Deportivo','Elegancia, velocidad y cero dinero para la gasolina. Te ves como millonario; tu cuenta no ha confirmado.');">🏎️ Deportivo de lujo <span class="sub">Elegancia y deudas premium</span></button>
+      <button class="btn" onclick="chooseVehicle('Moto','Modo velocidad activado. Casco obligatorio; ego opcional.');">🏍️ Moto supersónica <span class="sub">Llegas rápido y despeinado</span></button>
+      <button class="btn" onclick="chooseVehicle('Tsuru','El vehículo más buscado de la ciudad. No por rápido: por las deudas de tenencia. Si arranca, ya ganaste.');">🚗 Tsuru legendario <span class="sub">Si prende, es una señal divina</span></button>
+    </div>
+  </section>
+
+  <section class="screen" id="vehicleResult">
+    <div class="panel"><div class="eyebrow">Misión 1 · Completada</div><div class="bigicon">💸</div>
+      <span class="badge">+500 MOLUCOINS</span><h2 id="vehicleTitle">Vehículo seleccionado</h2>
+      <p id="vehicleText"></p>
+      <p>Tu vehículo está listo. El tanque está casi vacío, pero la actitud va llena.</p>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="go('code')">IR A LA MISIÓN 2 →</button></div>
+  </section>
+
+  <section class="screen" id="code">
+    <div class="panel"><div class="eyebrow">Misión 2 · Código secreto</div><div class="bigicon">🧠</div>
+      <h2>Elige sabiamente</h2>
+      <p>¿Qué es lo que más te conviene hacer en tu cumpleaños?</p>
+    </div>
+    <div class="btns">
+      <button class="btn secondary" onclick="wrongAnswer()">A) Hacerte millonario de inmediato</button>
+      <button class="btn secondary" onclick="wrongAnswer()">B) Comprar 27 coches y una mansión</button>
+      <button class="btn primary" onclick="rightAnswer()">C) Dejar que tu novia te consienta ❤️</button>
+    </div>
+  </section>
+
+  <section class="screen" id="wrong">
+    <div class="panel"><div class="eyebrow">Error 404</div><div class="bigicon">🚨</div>
+      <h2>Sentido común no encontrado</h2>
+      <p>El sistema ha detectado exceso de ambición y falta de cariño.</p>
+      <div class="notice">MULTA: un abrazo a tu novia. Sí, es una ley muy seria.</div>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="go('code')">REINTENTAR MISIÓN ↻</button></div>
+  </section>
+
+  <section class="screen" id="success">
+    <div class="panel"><div class="eyebrow">Misión 2 · Completada</div><div class="bigicon">🏆</div>
+      <span class="badge">+1,000 MOLUCOINS</span><h2>Así se hace, jefe</h2>
+      <p>Has demostrado que debajo de ese criminal de barrio existe un hombre que conoce sus prioridades.</p>
+      <p>El contacto tiene una última ubicación para ti. Prepárate para el golpe final.</p>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="go('vault')">DESBLOQUEAR MISIÓN FINAL →</button></div>
+  </section>
+
+  <section class="screen" id="vault">
+    <div class="panel"><div class="eyebrow">Misión 3 · El botín</div><div class="bigicon">🔐</div>
+      <h2>La bóveda final</h2>
+      <p>Antes de abrirla, debes aceptar los términos y condiciones del cumpleaños:</p>
+      <div class="letter">1. Hoy eres el cumpleañero oficial.
+2. Tienes derecho a recibir apapachos.
+3. La jefa siempre tiene la última palabra.
+4. El regalo no se puede cambiar por MoluCoins.
+5. Se recomienda sonreír al abrirlo.</div>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="revealGift()">ACEPTO TODO · ABRIR BOTÍN 🎁</button></div>
+  </section>
+
+  <section class="screen" id="final">
+    <div class="hero" style="min-height:250px">
+      <div class="eyebrow">Atraco completado</div>
+      <div class="bigicon">🎁</div>
+      <h1 style="font-size:3.2rem">¡Botín<br>recuperado!<em>Feliz cumpleaños, Pelone ❤️</em></h1>
+      <p>Has desbloqueado un nuevo nivel de vida. La recompensa te espera en la vida real.</p>
+    </div>
+    <div class="panel"><span class="badge">RECOMPENSA LEGENDARIA</span><h2 id="giftTitle">Tu regalo te espera</h2>
+      <p id="giftMessage" class="letter"></p>
+      <p class="small">Gracias por jugar. Ahora reclama tu botín con la persona que creó esta misión solo para ti.</p>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="showCredits()">VER CRÉDITOS FINALES ✦</button><button class="btn secondary" onclick="restart()">VOLVER A JUGAR ↻</button></div>
+  </section>
+
+  <section class="screen" id="credits">
+    <div class="panel"><div class="bigicon">💜</div><div class="eyebrow">Créditos finales</div><h2>Creado especialmente para Molusco</h2>
+      <p>Dirección, producción, guion y cariño: tu novia.</p>
+      <p>Protagonista: Pelone / Snaider.</p>
+      <p>Presupuesto de producción: discreto. Amor invertido: presupuesto ilimitado.</p>
+      <div class="letter">FIN… ¿o el comienzo de otra aventura juntos?</div>
+    </div>
+    <div class="btns"><button class="btn primary" onclick="restart()">JUGAR OTRA VEZ</button></div>
+  </section>
+  <div class="footer">Una aventura original de cumpleaños · No afiliada a Grand Theft Auto</div>
+</main>
+<script>
+const state={money:0,missions:0,vehicle:""};
+const screens=[...document.querySelectorAll('.screen')];
+function go(id){screens.forEach(s=>s.classList.toggle('active',s.id===id));window.scrollTo({top:0,behavior:'smooth'});updateStats();}
+function updateStats(){
+ document.getElementById('money').textContent='$'+String(state.money).padStart(3,'0');
+ document.getElementById('missionCount').textContent=Math.min(state.missions,3)+'/3';
+ document.getElementById('level').textContent=String(Math.min(1+state.missions,4)).padStart(2,'0');
+ document.getElementById('progressBar').style.width=(Math.min(state.missions,3)/3*100)+'%';
+}
+function chooseVehicle(name,desc){if(!state.vehicle){state.vehicle=name;state.money+=500;state.missions=1;}document.getElementById('vehicleTitle').textContent='Vehículo: '+name;document.getElementById('vehicleText').textContent=desc;go('vehicleResult');}
+function wrongAnswer(){go('wrong');}
+function rightAnswer(){if(state.missions<2){state.money+=1000;state.missions=2;}go('success');}
+function revealGift(){
+ state.missions=3;updateStats();
+ // Personaliza estas dos líneas con tu regalo real y tu mensaje.
+ document.getElementById('giftTitle').textContent='Tu regalo te espera en la vida real 🎁';
+ document.getElementById('giftMessage').textContent='Mi Pelone, ¡feliz cumpleaños! ❤️\\n\\nQuería regalarte algo diferente, una pequeña aventura hecha especialmente para ti. Gracias por compartir conmigo tus locuras, tus partidas y tantos momentos.\\n\\nTu botín está listo: busca la sorpresa que preparé para ti.\\n\\nCon amor, tu cómplice favorita.';
+ go('final');
+}
+function showCredits(){go('credits');}
+function restart(){state.money=0;state.missions=0;state.vehicle="";updateStats();go('start');}
+updateStats();
+</script>
+</body>
+</html>

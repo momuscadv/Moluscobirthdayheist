@@ -1,0 +1,31 @@
+MOLUSCO: THE BIRTHDAY HEIST
+============================
+
+ARCHIVO PRINCIPAL
+- index.html: videojuego web autocontenido. No necesita instalar nada ni conexión a internet para jugar una vez descargado.
+
+CÓMO PROBARLO
+1. Abre index.html en un navegador moderno.
+2. En celular, puedes abrirlo desde Archivos si el sistema permite abrir HTML en el navegador; para una experiencia más sencilla, usa el enlace publicado.
+3. Completa las misiones: iniciar, elegir vehículo, responder el código y abrir el botín.
+
+PERSONALIZAR EL REGALO
+Abre index.html en un editor de texto y busca la función revealGift().
+Cambia:
+- giftTitle: título del regalo.
+- giftMessage: texto final.
+Puedes editar el mensaje entre comillas. Conserva las comillas y los saltos de línea como aparecen en el código.
+
+PUBLICAR GRATIS CON GITHUB PAGES
+1. Entra a https://github.com/ y crea una cuenta o inicia sesión.
+2. Crea un repositorio nuevo, por ejemplo: molusco-birthday-heist
+3. Sube index.html al repositorio (Add file > Upload files).
+4. En el repositorio abre Settings > Pages.
+5. En Build and deployment, elige Deploy from a branch; selecciona la rama main y la carpeta /(root), y guarda.
+6. Espera a que GitHub Pages publique el sitio. El enlace tendrá forma https://TU-USUARIO.github.io/molusco-birthday-heist/
+7. Abre el enlace en tu celular y pruébalo antes de compartirlo.
+
+NOTAS
+- El juego es una aventura 2D de pantallas y decisiones, no una recreación completa de GTA.
+- El juego no recoge ni envía datos personales.
+- Puedes alojarlo gratis en GitHub Pages o en otro hosting estático gratuito.
